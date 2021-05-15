@@ -1,0 +1,1 @@
+Essa pasta ficará oculta ao sistema e vai receber as imagens baixadas antes de converter para pdf
