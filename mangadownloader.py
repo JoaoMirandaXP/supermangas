@@ -175,7 +175,7 @@ if __name__ == '__main__':
     print(capitulos_vector)
     path = create_path(manga)
     print('Vou guardar esses capitulos em {}'.format(path))
+    driver.close()
     for capitulo, imgs_link in capitulos_vector.items():
         resultado = baixar_capitulo(path,capitulo,imgs_link)
         print(resultado)
-    driver.close()
