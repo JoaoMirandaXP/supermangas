@@ -146,16 +146,28 @@ def create_path(manga):
     if not os.path.exists(destino):
         os.mkdir(destino)
     return destino 
-
+def baixar_intervalo(capitulos_vector,path, inicio, fim):
+    if fim == -1:
+        fim = len(capitulos_vector)
+    for capitulo, imgs_link in capitulos_vector.items():
+        if (inicio<=int(capitulo)<=fim):
+            resultado = baixar_capitulo(path, capitulo, imgs_link)
+            print(resultado)
 #execução do algonritmo
 if __name__ == '__main__':
     
     url = sys.argv[1]
-    ate = 1
+    inicio = 1
+    fim = -1
     try:
-        ate =  int(sys.argv[2])
+        inicio =  int(sys.argv[2])
     except Exception:
-        ate = 1
+        inicio = 1
+    try:
+        fim = int(sys.argv[3])
+    except Exception:
+        print('O fim não está bem definido então vou baixar todos que encontrar')
+        
     driver = webdriver.Chrome(PATH_PARA_WEBDRIVER)
     ir_para(url, driver)
     manga = driver.title.replace('Manga ', '')
@@ -176,6 +188,4 @@ if __name__ == '__main__':
     path = create_path(manga)
     print('Vou guardar esses capitulos em {}'.format(path))
     driver.close()
-    for capitulo, imgs_link in capitulos_vector.items():
-        resultado = baixar_capitulo(path,capitulo,imgs_link)
-        print(resultado)
+    baixar_intervalo(capitulos_vector, path,inicio, fim)
