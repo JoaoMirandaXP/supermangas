@@ -18,9 +18,9 @@ python -m pip install -r requirements.txt
 ```
 - Baixar o webdriver selenium de acordo com seu navegador
 https://pypi.org/project/selenium/#drivers
-coloque num local confortável e veja o caminho para o seu arquivo, vamos usar a seguir!
+coloque num local confortável e não esqueça de descompactá-lo(veja o caminho para o seu arquivo, vamos usar a seguir!)
 
-- Abrir o aquivo, ```mangadownloader.py``` no seu bloco de notas ou sei lá e substituir a constante PATH_PARA_WEBDRIVER do programa pela a que você conseguiu no passo anterior
+- Abrir o aquivo, ```mangadownloader.py``` no seu bloco de notas ou sei lá e substituir a constante PATH_PARA_WEBDRIVER do programa pelo caminho do webdriver que você conseguiu no passo anterior
 ------
 
 ## Agora é só baixar!
