@@ -150,14 +150,7 @@ def create_path(manga):
     if not os.path.exists(destino):
         os.mkdir(destino)
     return destino 
-#   Essa função está quase entrando em desuso
-def baixar_intervalo(capitulos_vector,path, inicio, fim):
-    if fim == -1:
-        fim = len(capitulos_vector)
-    for capitulo, imgs_link in capitulos_vector.items():
-        if (inicio<=int(capitulo)<=fim):
-            resultado = baixar_capitulo(path, capitulo, imgs_link)
-            print(resultado)
+
 #execução do algonritmo
 if __name__ == '__main__':
     
@@ -195,5 +188,3 @@ if __name__ == '__main__':
     driver.close()
     for mangas, links in capitulos_vector.items():
         baixar_capitulo(path,mangas,links)
-
-    #baixar_intervalo(capitulos_vector, path,inicio, fim)
