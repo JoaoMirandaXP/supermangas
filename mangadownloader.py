@@ -95,6 +95,8 @@ def url_tracker(url, numero):
 #   É uma fundionalidade a ser melhorada, afinal essa é a parte que se faz uma lista brutal com todos os capítulos vinculados a todos os links da suas respectivas imagens
 def abrir_capitulos(capitulos, driver,inicio, fim):
     capitulo_vector = {}
+    if fim == -1:
+        fim = len(capitulos)
     for capitulo, link in capitulos.items():
         if(inicio<=int(capitulo.split('.')[0])<=fim):
             ir_para(link, driver)
