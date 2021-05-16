@@ -7,9 +7,9 @@ import requests
 
 
 #unidade do tempo de espera entre requisições para evitar bugs, em segundos, para conexão lenta usar 2 seg
-WAIT_TIME = .75
+WAIT_TIME = 0.75
 #Coloque aqui o caminho para o seu webdriver selenium, atenção, ele deve estar na mesma versão do seu chrome
-PATH_PARA_WEBDRIVER = 'INSIRA AQUI'
+PATH_PARA_WEBDRIVER = '/usr/bin/chromedriver' # INSIRA_AQUI O SEU WEB DRIVER'
 
 
 #   função de limpeza da pasta temp, pode não ser sempre necessária
@@ -18,8 +18,9 @@ PATH_PARA_WEBDRIVER = 'INSIRA AQUI'
 #   e a páginas a mais serão renderizadas também
 def clear_temp():
     for x in os.listdir('.temp'):
-        local= os.path.join('.temp', x)
-        os.remove(local)
+        if x.endswith('.jpg'):
+            local= os.path.join('.temp', x)
+            os.remove(local)
 #   Para facilitar o processo do driver de ir para alguma url em portugues
 #   e também para definir um tempo de espera entre as requisições entre duas páginas
 def ir_para(url, driver):
@@ -35,6 +36,7 @@ def buscar_elementos(elemento, driver):
 #   pode ser útil ao ter que selecionar uma língua de preferência, se houver para o mangá
 def busca_capitulos(elemento, capitulos = {}):
     divs = []
+    time.sleep(WAIT_TIME)
     try:
         divs = elemento.find_elements_by_class_name('boxTop10')
     except Exception:
@@ -48,20 +50,31 @@ def busca_capitulos(elemento, capitulos = {}):
     #    except Exception:
     #        divs.append(d)
     for div in divs:
-        chapter=div.find_element_by_class_name('top10Link')
-        link = chapter.find_element_by_tag_name('a').get_attribute('href')
-        number = chapter.find_element_by_tag_name('span').text
-        capitulos[number] = link
+        try:
+            chapter=div.find_element_by_class_name('top10Link')
+            link = chapter.find_element_by_tag_name('a').get_attribute('href')
+            number = chapter.find_element_by_tag_name('span').text
+            capitulos[number] = link
+        
+        except Exception:
+            time.sleep(WAIT_TIME)
+            chapter=div.find_element_by_class_name('top10Link')
+            link = chapter.find_element_by_tag_name('a').get_attribute('href')
+            number = chapter.find_element_by_tag_name('span').text
+            capitulos[number] = link
+
+
     return capitulos
 #   Apenas como simplificação dos comandos para selenium, funciona como um simplficador da clausula if dentro da execução
 #   veriicando se existem mais capítulos a adicionados ao grande dicionário associando todos os links aos seus respectivos capitulos
 def existem_mais_capitulos(capitulos, driver, ate = 1):
     time.sleep(4*WAIT_TIME)
-    if ate in capitulos:
+    if str(ate) in capitulos:
         print('Finalizamos a busca pelos capitulos')
         return False
     else:
-        print('Vamos para a próxima página')
+        print('Escaneando todos os capitulos.... Vamos para a próxima página')
+        #print(capitulos)
         driver.find_element_by_xpath('//button[@title="Próxima Página"]').click()
         #print('Vamos para a página anterior')
         #driver.find_element_by_xpath('//button[@title="Página Anterior"]').click()
@@ -80,58 +93,49 @@ def url_tracker(url, numero):
         img_links.append(new_url)
     return img_links
 #   É uma fundionalidade a ser melhorada, afinal essa é a parte que se faz uma lista brutal com todos os capítulos vinculados a todos os links da suas respectivas imagens
-def abrir_capitulos(capitulos, driver):
+def abrir_capitulos(capitulos, driver,inicio, fim):
     capitulo_vector = {}
     for capitulo, link in capitulos.items():
-        
-        ir_para(link, driver)
-        div = ''
-        try:
-            div = driver.find_element_by_class_name('capituloView')
-            print('Identificando imagens do capitulo {}'.format(capitulo))
-        except Exception:
-            print('Cool down, adcho que estou indo rápido demais')
-            time.sleep(60)
-            print('Okay, vamos tentar de novo!')
+        if(inicio<=int(capitulo.split('.')[0])<=fim):
             ir_para(link, driver)
-            div = driver.find_element_by_class_name('capituloView')
-   
+            div = ''
+            try:
+                div = driver.find_element_by_class_name('capituloView')
+                print('Identificando imagens do capitulo {}'.format(capitulo))
+            except Exception:
+                print('Cool down, adcho que estou indo rápido demais')
+                time.sleep(60)
+                print('Okay, vamos tentar de novo!')
+                ir_para(link, driver)
+                div = driver.find_element_by_class_name('capituloView')
+    
 
-        divs_paginas = div.find_elements_by_class_name('capituloViewBox')
-        
-        numero = len(divs_paginas)
-        url = driver.find_element_by_xpath('//img[@data-id-image=1]').get_attribute('src') 
+            divs_paginas = div.find_elements_by_class_name('capituloViewBox')
+            
+            numero = len(divs_paginas)
+            url = driver.find_element_by_xpath('//img[@data-id-image=1]').get_attribute('src') 
 
-        img_links = url_tracker(url, numero)
+            img_links = url_tracker(url, numero)
 
-        capitulo_vector[capitulo] = img_links
-        
+            capitulo_vector[capitulo] = img_links
     return capitulo_vector
 #   Essa função ficou um pouco mais geral, dado onde se deve baixar, o nome e o link das imagens ela vai baixar corretamente
 def baixar_capitulo(path, capitulo, imgs_link):
     imgs = []
     capitulo += '.pdf'
     progress = '-'
+
     for img in imgs_link:
         series = img.split('/')
         print(series[-2])
         temp = os.path.join('.temp', series[-2] + '-' + series[-1]+ '.jpg') 
         response =  requests.get(img)
-        #if respectivos.status_code == requests.codes.OK:
-        #    with open(temp, 'wb') as arquivo:
-        #        arquivo.write(response.content)
-        #    imgs.append(Image.open(temp))
-        #    progress += '-'
-        #else :
-        #    time.sleep(60*WAIT_TIME)
-        #    with open(temp, 'wb') as arquivo:
-        #        arquivo.write(response.content)
-        #    imgs.append(Image.open(temp))
-        with open(temp, 'wb') as arquivo:
-            arquivo.write(response.content)
-        imgs.append(Image.open(temp))
-        progress += '-'
-        print(progress)
+        if response.status_code == requests.codes.OK:
+            with open(temp, 'wb') as arquivo:
+                arquivo.write(response.content)
+            imgs.append(Image.open(temp))
+            progress += '-'
+            print(progress)
     progress += '!'
     first = imgs[0]
     imgs.pop(0 ) 
@@ -146,6 +150,7 @@ def create_path(manga):
     if not os.path.exists(destino):
         os.mkdir(destino)
     return destino 
+#   Essa função está quase entrando em desuso
 def baixar_intervalo(capitulos_vector,path, inicio, fim):
     if fim == -1:
         fim = len(capitulos_vector)
@@ -175,17 +180,20 @@ if __name__ == '__main__':
 
     print('Escolha o idioma na página em 10 segundos ...')
     time.sleep(10)
-    
+    print('Okay, agora vou procurar o intervalo {}...{}'.format(inicio, fim))
     lista_de_conteudos = buscar_elementos('listaDeConteudo', driver)
     capitulos = busca_capitulos(lista_de_conteudos)
     
-    while (existem_mais_capitulos(capitulos, driver, ate)):
+    while (existem_mais_capitulos(capitulos, driver, inicio)):
         lista_de_conteudos = buscar_elementos('listaDeConteudo', driver)
         capitulos = busca_capitulos(lista_de_conteudos, capitulos)
     #print(capitulos)
-    capitulos_vector = abrir_capitulos(capitulos,driver)
+    capitulos_vector = abrir_capitulos(capitulos,driver, inicio, fim)
     print(capitulos_vector)
     path = create_path(manga)
     print('Vou guardar esses capitulos em {}'.format(path))
     driver.close()
-    baixar_intervalo(capitulos_vector, path,inicio, fim)
+    for mangas, links in capitulos_vector.items():
+        baixar_capitulo(path,mangas,links)
+
+    #baixar_intervalo(capitulos_vector, path,inicio, fim)
