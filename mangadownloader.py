@@ -234,4 +234,13 @@ if __name__ == '__main__':
     #Essa lógica pode tomar um pouco do rendimento do programa, pois o programa só começa a baixar depois de passar por todas as páginas...
     #for mangas, links in capitulos_vector.items():
     #    baixar_capitulo(path,mangas,links)
-    print('tudo vai bem quanto termina bem... Aproveite seus mangás')
+    #cowsay 
+    print(' ____________________________________')
+    print('/ tudo vai bem quanto termina bem... \\')
+    print('\ Aproveite seus mangás              /')
+    print('------------------------------------')
+    print('        \   ^__^')
+    print('         \  (oo)\_______')
+    print('            (__)\       )\/\\')
+    print('                ||----w |')
+    print('                ||     ||')
