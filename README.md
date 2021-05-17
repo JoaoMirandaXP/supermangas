@@ -30,3 +30,16 @@ Encontre a URL do seu manga e atualmente, o aplicativo vai procurar por todas os
 python supermangas.py [URL] [inicio] [fim]
 ```
 * os parâmetros ```[incio]``` e ```[fim]``` podem ser ignorados caso se desejar baixar todos os episódios, coloque números ou seus valores serão ignorados, honestamente, eu não sei o que acontece se você colocar um capítulo que não exista... Então se você quiser descobrir e me contar eu agradeceria!  
+
+------
+## TO-DO
+
+- Identificar o idioma da página e dar a escolha via terminal
+
+- Ver se os capítulos estão em ordem crescente ou decrescente. (se estiver em ordem crescente o programa não funciona)
+
+- Fazer com que o webdriver possa ser de qualquer navegador. (Só funciona com o Chrome)
+
+- Descobrir se existe algum timeout ou limite de requisições por segundo que possa estar atrapalhando a velocidade com o que as imagens estão sendo baixadas (Os primeiros pdf's são gerados em menos de 1 minutos enquanto a medida que o tempo passa todos demoram cerca de 2 minutos)
+
+- Identificar a extensão do arquivo que está sendo baixado. (Atualmente todos os arquivos baixados coincidentemente são .jpg mas pode não funcionar para todas as extensões) - def url_tracker

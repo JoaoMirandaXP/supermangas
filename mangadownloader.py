@@ -18,7 +18,7 @@ PATH_PARA_WEBDRIVER = '/usr/bin/chromedriver' # INSIRA_AQUI O SEU WEB DRIVER'
 #   e a páginas a mais serão renderizadas também
 def clear_temp():
     for x in os.listdir('.temp'):
-        if x.endswith('.jpg'):
+        if not x.endswith('.txt'):
             local= os.path.join('.temp', x)
             os.remove(local)
 #   Para facilitar o processo do driver de ir para alguma url em portugues
@@ -129,8 +129,9 @@ def baixar_capitulo(path, capitulo, imgs_link):
 
     for img in imgs_link:
         series = img.split('/')
-        print(series[-2])
-        temp = os.path.join('.temp', series[-2] + '-' + series[-1]+ '.jpg') 
+        if img == imgs_link[0]:
+            print(series[-2])
+        temp = os.path.join('.temp', series[-2] + '-' + series[-1]) 
         response =  requests.get(img)
         if response.status_code == requests.codes.OK:
             with open(temp, 'wb') as arquivo:
@@ -138,12 +139,14 @@ def baixar_capitulo(path, capitulo, imgs_link):
             imgs.append(Image.open(temp))
             progress += '-'
             print(progress)
+        else: 
+            print('Não foi possível encontrar a página {} do capítulo {}'.format(series[-1], capitulo))
     progress += '!'
     first = imgs[0]
     imgs.pop(0 ) 
     first.save(os.path.join(path, capitulo),save_all=True,append_images=imgs)
-    print('Capítulo {} baixado :)'.format(capitulo))
     print(progress)
+    print('Capítulo {} baixado :)'.format(capitulo))
     clear_temp()
     return 'Okay... Próximo!'
 #   Lógica de ajuda ao os.path e também serve para criar pastas de mangas
@@ -155,7 +158,6 @@ def create_path(manga):
 
 #execução do algonritmo
 if __name__ == '__main__':
-    
     url = sys.argv[1]
     inicio = 1
     fim = -1
@@ -190,3 +192,4 @@ if __name__ == '__main__':
     driver.close()
     for mangas, links in capitulos_vector.items():
         baixar_capitulo(path,mangas,links)
+    print('tudo vai bem quanto termina bem... Aproveite seus mangás')

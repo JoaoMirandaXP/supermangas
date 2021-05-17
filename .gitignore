@@ -1,2 +1,4 @@
 output/*
 \!output/INFO.txt
+.temp/*
+\!.temp/INFO.txt
