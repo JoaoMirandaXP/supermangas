@@ -147,7 +147,7 @@ def baixar_capitulo(path, capitulo, imgs_link):
     imgs = []
     capitulo += '.pdf'
     progress = '-'
-
+    print('Baixando {}'.format(capitulo))
     for img in imgs_link:
         series = img.split('/')
         if img == imgs_link[0]:
