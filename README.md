@@ -43,3 +43,5 @@ python supermangas.py [URL] [inicio] [fim]
 - Descobrir se existe algum timeout ou limite de requisições por segundo que possa estar atrapalhando a velocidade com o que as imagens estão sendo baixadas (Os primeiros pdf's são gerados em menos de 1 minutos enquanto a medida que o tempo passa todos demoram cerca de 2 minutos)
 
 - Identificar a extensão do arquivo que está sendo baixado. (Atualmente todos os arquivos baixados coincidentemente são .jpg mas pode não funcionar para todas as extensões) - def url_tracker
+
+- Verficar se a URL digitada realemente tem um mangá

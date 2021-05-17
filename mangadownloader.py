@@ -158,9 +158,11 @@ def create_path(manga):
 
 #execução do algonritmo
 if __name__ == '__main__':
+    #Recebendo as informações do terminal
     url = sys.argv[1]
     inicio = 1
     fim = -1
+    #tratamento de erros caso algum valor não seja digitado
     try:
         inicio =  int(sys.argv[2])
     except Exception:
@@ -169,9 +171,11 @@ if __name__ == '__main__':
         fim = int(sys.argv[3])
     except Exception:
         print('O fim não está bem definido então vou baixar todos que encontrar')
-        
+    #instânciando o webdriver     
     driver = webdriver.Chrome(PATH_PARA_WEBDRIVER)
+    #entrando na página inicial do mangá  
     ir_para(url, driver)
+    # formatação do nome do mangá, pode mudar de site para site
     manga = driver.title.replace('Manga ', '')
     print('Nome do mangá: {}'.format(manga))
 
@@ -187,9 +191,11 @@ if __name__ == '__main__':
     #print(capitulos)
     capitulos_vector = abrir_capitulos(capitulos,driver, inicio, fim)
     print(capitulos_vector)
+    #Caminho para onde os mangás devem ser baixados 
     path = create_path(manga)
     print('Vou guardar esses capitulos em {}'.format(path))
     driver.close()
+    #Essa lógica pode tomar um pouco do rendimento do programa, pois o programa só começa a baixar depois de passar por todas as páginas...
     for mangas, links in capitulos_vector.items():
         baixar_capitulo(path,mangas,links)
     print('tudo vai bem quanto termina bem... Aproveite seus mangás')
