@@ -4,6 +4,7 @@ import os
 from selenium import webdriver
 from PIL import Image
 import requests
+from datetime import datetime 
 
 
 #unidade do tempo de espera entre requisições para evitar bugs, em segundos, para conexão lenta usar 2 seg
@@ -221,13 +222,16 @@ if __name__ == '__main__':
 
     #   Não gosto dessa parte do código, pois não está de acordo com o DRY, e a lógica não está bem abstraida
     for capitulo_id, link in capitulos.items():
+        t_inicio = datetime.now()
         if fim == -1:
             fim = len(capitulos)
         # se o capítulo está dentro do intervalo
         if (inicio<= int(capitulo_id.split('.')[0]) <= fim ):
             img_links = abrir_capitulo(capitulo_id, link, driver)
             baixar_capitulo(path, capitulo_id, img_links)
-
+        t_fim = datetime.now()
+        delta = t_fim - t_inicio
+        print('Tempo de download {}'.format(delta))
 
 
     driver.close()
@@ -238,7 +242,7 @@ if __name__ == '__main__':
     print(' ____________________________________')
     print('/ tudo vai bem quanto termina bem... \\')
     print('\ Aproveite seus mangás              /')
-    print('------------------------------------')
+    print(' ------------------------------------')
     print('        \   ^__^')
     print('         \  (oo)\_______')
     print('            (__)\       )\/\\')
