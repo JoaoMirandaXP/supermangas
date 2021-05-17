@@ -73,14 +73,14 @@ def existem_mais_capitulos(capitulos, driver, ate = 1):
         print('Finalizamos a busca pelos capitulos')
         return False
     else:
-        print('Escaneando todos os capitulos.... Vamos para a próxima página')
+        print('Buscando o intervalo nos capítulos... Vamos para a próxima página')
         #print(capitulos)
         driver.find_element_by_xpath('//button[@title="Próxima Página"]').click()
         #print('Vamos para a página anterior')
         #driver.find_element_by_xpath('//button[@title="Página Anterior"]').click()
         return True
 #   É o tempero específico para esse site, mas pode funcionar para vários outros, já que esse usa a estratégia de deixar imagens vazias
-#   Para evitar o webscrapping, então utilizamos apenas a primeira url que nesse caso será fixa
+#   Para evitar o webscrapping, então utilizamos apenas a primeira url que nesse caso será modificada no cógigo
 def url_tracker(url, numero):
     img_links = []
     url_split = url.split('/')
@@ -91,6 +91,27 @@ def url_tracker(url, numero):
     for n in range(1, numero + 1):
         new_url = base_url.format(n)
         img_links.append(new_url)
+    return img_links
+#   Separação de código
+def abrir_capitulo(capitulo_id,link,driver):
+    ir_para(link, driver)
+    div  = ''
+    try:
+        div = driver.find_element_by_class_name('capituloView')
+        print('Identificando imagens do capitulo {}'.format(capitulo_id))
+    except Exception:
+        print('Cool down, acho que estou indo rápido demais')
+        time.sleep(30*WAIT_TIME)
+        print('Okay, vamos tentar de novo!')
+        ir_para(link, driver)
+        div = driver.find_element_by_class_name('capituloView')
+    
+    divs_paginas = div.find_elements_by_class_name('capituloViewBox')
+    
+    numero = len(divs_paginas)
+    url = driver.find_element_by_xpath('//img[@data-id-image=1]').get_attribute('src') 
+    img_links = url_tracker(url, numero)
+    
     return img_links
 #   É uma fundionalidade a ser melhorada, afinal essa é a parte que se faz uma lista brutal com todos os capítulos vinculados a todos os links da suas respectivas imagens
 def abrir_capitulos(capitulos, driver,inicio, fim):
@@ -105,7 +126,7 @@ def abrir_capitulos(capitulos, driver,inicio, fim):
                 div = driver.find_element_by_class_name('capituloView')
                 print('Identificando imagens do capitulo {}'.format(capitulo))
             except Exception:
-                print('Cool down, adcho que estou indo rápido demais')
+                print('Cool down, acho que estou indo rápido demais')
                 time.sleep(60)
                 print('Okay, vamos tentar de novo!')
                 ir_para(link, driver)
@@ -171,10 +192,13 @@ if __name__ == '__main__':
         fim = int(sys.argv[3])
     except Exception:
         print('O fim não está bem definido então vou baixar todos que encontrar')
+    
     #instânciando o webdriver     
     driver = webdriver.Chrome(PATH_PARA_WEBDRIVER)
+    
     #entrando na página inicial do mangá  
     ir_para(url, driver)
+    
     # formatação do nome do mangá, pode mudar de site para site
     manga = driver.title.replace('Manga ', '')
     print('Nome do mangá: {}'.format(manga))
@@ -188,14 +212,26 @@ if __name__ == '__main__':
     while (existem_mais_capitulos(capitulos, driver, inicio)):
         lista_de_conteudos = buscar_elementos('listaDeConteudo', driver)
         capitulos = busca_capitulos(lista_de_conteudos, capitulos)
-    #print(capitulos)
-    capitulos_vector = abrir_capitulos(capitulos,driver, inicio, fim)
-    print(capitulos_vector)
+    
+    #capitulos_vector = abrir_capitulos(capitulos,driver, inicio, fim)
+    #print(capitulos_vector)
     #Caminho para onde os mangás devem ser baixados 
     path = create_path(manga)
     print('Vou guardar esses capitulos em {}'.format(path))
+
+    #   Não gosto dessa parte do código, pois não está de acordo com o DRY, e a lógica não está bem abstraida
+    for capitulo_id, link in capitulos.items():
+        if fim == -1:
+            fim = len(capitulos)
+        # se o capítulo está dentro do intervalo
+        if (inicio<= int(capitulo_id.split('.')[0]) <= fim ):
+            img_links = abrir_capitulo(capitulo_id, link, driver)
+            baixar_capitulo(path, capitulo_id, img_links)
+
+
+
     driver.close()
     #Essa lógica pode tomar um pouco do rendimento do programa, pois o programa só começa a baixar depois de passar por todas as páginas...
-    for mangas, links in capitulos_vector.items():
-        baixar_capitulo(path,mangas,links)
+    #for mangas, links in capitulos_vector.items():
+    #    baixar_capitulo(path,mangas,links)
     print('tudo vai bem quanto termina bem... Aproveite seus mangás')
