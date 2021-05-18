@@ -6,11 +6,12 @@ from PIL import Image
 import requests
 from datetime import datetime 
 
+#Coloque aqui o caminho para o seu webdriver selenium, atenção, ele deve estar na mesma versão do seu chrome
+PATH_PARA_WEBDRIVER = '' # INSIRA_AQUI O SEU WEB DRIVER, leia o README.md'
 
 #unidade do tempo de espera entre requisições para evitar bugs, em segundos, para conexão lenta usar 2 seg
 WAIT_TIME = 0.75
-#Coloque aqui o caminho para o seu webdriver selenium, atenção, ele deve estar na mesma versão do seu chrome
-PATH_PARA_WEBDRIVER = '/usr/bin/chromedriver' # INSIRA_AQUI O SEU WEB DRIVER'
+
 
 
 #   função de limpeza da pasta temp, pode não ser sempre necessária
@@ -180,6 +181,10 @@ def create_path(manga):
 
 #execução do algonritmo
 if __name__ == '__main__':
+    #Verificando se a PATH_PARA_WEBDRIVER está preenchida com algo
+    if(PATH_PARA_WEBDRIVER == ''):
+        exit('ERRO: Você não definiu o PATH para o WEBDRIVER de seu browser no mangadownloader.py')
+
     #Recebendo as informações do terminal
     url = sys.argv[1]
     inicio = 1
@@ -193,6 +198,7 @@ if __name__ == '__main__':
         fim = int(sys.argv[3])
     except Exception:
         print('O fim não está bem definido então vou baixar todos que encontrar')
+
     
     #instânciando o webdriver     
     driver = webdriver.Chrome(PATH_PARA_WEBDRIVER)
