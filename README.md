@@ -27,7 +27,7 @@ coloque num local confortável e não esqueça de descompactá-lo(veja o caminho
 Encontre a URL do seu manga e atualmente, o aplicativo vai procurar por todas os capitulos que estiverem disponiveis no site e vai salvar na pasta ```output```
 
 ```
-python supermangas.py [URL] [inicio] [fim]
+python mangadownloader.py [URL] [inicio] [fim]
 ```
 * os parâmetros ```[incio]``` e ```[fim]``` podem ser ignorados caso se desejar baixar todos os episódios, coloque números ou seus valores serão ignorados, honestamente, eu não sei o que acontece se você colocar um capítulo que não exista... Então se você quiser descobrir e me contar eu agradeceria!  
 
