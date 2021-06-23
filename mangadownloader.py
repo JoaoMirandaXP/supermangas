@@ -56,7 +56,6 @@ def busca_capitulos(elemento, metodo, capitulos = {}):
     time.sleep(WAIT_TIME)
     try:
         divs = elemento.find_elements_by_class_name(wrapper)
-        print(divs)
     except Exception:
         print('Cool Down, acho que estou indo rápido demais')
         time.sleep(10*WAIT_TIME)
@@ -142,34 +141,30 @@ def abrir_capitulo(capitulo_id,link,driver):
 
     return img_links
 #   É uma fundionalidade a ser melhorada, afinal essa é a parte que se faz uma lista brutal com todos os capítulos vinculados a todos os links da suas respectivas imagens
-def abrir_capitulos(capitulos, driver,inicio, fim):
-    capitulo_vector = {}
-    if fim == -1:
-        fim = len(capitulos)
-    for capitulo, link in capitulos.items():
-        if(inicio<=int(capitulo.split('.')[0])<=fim):
-            ir_para(link, driver)
-            div = ''
-            try:
-                div = driver.find_element_by_class_name('capituloView')
-                print('Identificando imagens do capitulo {}'.format(capitulo))
-            except Exception:
-                print('Cool down, acho que estou indo rápido demais')
-                time.sleep(60)
-                print('Okay, vamos tentar de novo!')
-                ir_para(link, driver)
-                div = driver.find_element_by_class_name('capituloView')
+def abrir_imagens(url, driver):
+
+    div = ''
+    time.sleep(2*WAIT_TIME)
+    try:
+        ir_para(url, driver)
+        div = driver.find_element_by_class_name('container-chapter-reader')
+        print('Identificando imagens do capitulo {}'.format(capitulo))
+    except Exception:
+        print('Cool down, acho que estou indo rápido demais')
+        ir_para(url, driver)
+        print('Okay, vamos tentar de novo!')
+        div = driver.find_element_by_class_name('container-chapter-reader')
 
 
-            divs_paginas = div.find_elements_by_class_name('capituloViewBox')
+    img_tags = div.find_elements_by_tag_name('img')
 
-            numero = len(divs_paginas)
-            url = driver.find_element_by_xpath('//img[@data-id-image=1]').get_attribute('src')
+    numero = len(img_tags)
+    url = img_tags[0].get_attribute('src')
 
-            img_links = url_tracker(url, numero)
+    img_links = url_tracker(url, numero)
 
-            capitulo_vector[capitulo] = img_links
-    return capitulo_vector
+
+    return img_links
 #   Essa função ficou um pouco mais geral, dado onde se deve baixar, o nome e o link das imagens ela vai baixar corretamente
 def baixar_capitulo(path, capitulo, imgs_link, driver):
     imgs = []
@@ -277,15 +272,30 @@ def verificar_origem(url):
 def supernatural(url, inicio, fim ,driver):
     lista_de_conteudos = buscar_elementos('row-content-chapter', driver, 'nato')
     capitulos = busca_capitulos(lista_de_conteudos, 'nato')
-    print(capitulos)
 
-    print(len(capitulos))
-    #titles, link = capitulos.items()
+    titles , links = capitulos.keys(), capitulos.values()
+    unpacked_titles =list(titles)
+    unpacked_links = list(links)
+    manga = driver.title.replace('Manga Online Free - Manganato', '')
+    print('Nome do mangá: {}'.format(manga))
     #print(titles[332])
-    print(tuple(capitulos.items()))
+    #print(tuple(capitulos.items()))
+    print(inicio)
+    print(fim)
+    reverser = len(unpacked_titles)
+    if(fim==-1):
+        for x in range(0,reverser - inicio + 1):
+            index = reverser - x
+            img_links = abrir_imagens(unpacked_links[x], driver)
+            print(unpacked_titles[x])
+            # passar o path, carregar cookies , iterar e baixar as imagens, compilar pdf
 
-    
-    #path = create_path(driver.title)
+    else:
+        for x in range(reverser - fim,reverser - inicio + 1  ):
+            unpacked_titles[x]
+            unpacked_links[x]
+
+    #path = create_path(driver.title.replace(' Online Free - Manganato'))
     #print('Vou guardar esses capitulos em {}'.format(path))
 
 #execução do algonritmo
